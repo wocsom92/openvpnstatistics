@@ -3,9 +3,11 @@ from datetime import datetime, date, timedelta
 from connection import Connection
 
 class ConnectionDB:
+    def __init__(self, db_name ):
+        self.db_name = db_name + '.db'
     def create_connection_database(self):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
             
             c.execute('''
@@ -30,7 +32,7 @@ class ConnectionDB:
 
     def insert_connection(self, connection):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
             
             c.execute('''
@@ -48,7 +50,7 @@ class ConnectionDB:
 
     def update_connection(self, data):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -67,7 +69,7 @@ class ConnectionDB:
 
     def delete_connection(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -85,7 +87,7 @@ class ConnectionDB:
 
     def select_connection(self, common_name, connected_since):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -111,7 +113,7 @@ class ConnectionDB:
 
     def select_all_connections(self):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -138,7 +140,7 @@ class ConnectionDB:
 
     def select_distinct_common_names(self):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -160,7 +162,7 @@ class ConnectionDB:
 
     def select_sum_bytes_for_common_name(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -184,7 +186,7 @@ class ConnectionDB:
     
     def select_last_seen(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
@@ -210,7 +212,7 @@ class ConnectionDB:
 
     def select_sum_bytes_for_current_day(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             # Get the current date
@@ -240,7 +242,7 @@ class ConnectionDB:
         
     def select_sum_bytes_for_last_week(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             # Calculate the date one week ago from today
@@ -271,7 +273,7 @@ class ConnectionDB:
 
     def select_sum_bytes_for_last_month(self, common_name):
         try:
-            conn = sqlite3.connect("connection.db")
+            conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             # Calculate the date one month ago from today

@@ -7,7 +7,7 @@ import threading
 
 def output_generator():
     while True:
-        connectionDb = ConnectionDB()
+        connectionDb = ConnectionDB('connection')
         users = connectionDb.select_distinct_common_names()
         with open('data.txt', 'w') as file:#add header 
             pass
@@ -29,9 +29,9 @@ def main():
 
     while True: 
         parser = OpenVpnParser()
-        data = parser.parseOpenVpnStatus('/var/log/openvpn/status.log')
-        #data = parser.parseOpenVpnStatus('data/status.log')    
-        connectionDb = ConnectionDB()
+        #data = parser.parseOpenVpnStatus('/var/log/openvpn/status.log')
+        data = parser.parseOpenVpnStatus('data/status.log')    
+        connectionDb = ConnectionDB('connection')
         connectionDb.create_connection_database()
         for connection in data:
             existing = connectionDb.select_connection(connection.common_name, connection.connected_since)
