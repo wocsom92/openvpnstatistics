@@ -12,9 +12,9 @@ The **OpenVPN Connection Monitor** is a Python script designed to parse OpenVPN 
 
 ## Overview
 
-The OpenVPN Connection Monitor consists of a set of Python scripts that work together to achieve the following tasks:
-
 ![C4 Diagram](data/vpnparser.drawio.png)
+
+The OpenVPN Connection Monitor consists of a set of Python scripts that work together to achieve the following tasks:
 
 1. **Parsing OpenVPN Status**: The script utilizes the `OpenVpnParser` class to parse OpenVPN status data from a specified input file.
 
@@ -45,7 +45,7 @@ output file format:
 2.) Run the main script to start monitoring OpenVPN connections and generating statistics.
     
 ```bash
-    python main.py
+    python3 main.py
 ```
 
 The script will run indefinitely, parsing OpenVPN status data at specified intervals and generating the connection statistics output.
