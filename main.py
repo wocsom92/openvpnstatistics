@@ -1,6 +1,5 @@
 from openVpnParser import OpenVpnParser
 from connections_db import ConnectionDB
-from connection import Connection
 from user import User
 from config import Config
 import time
@@ -36,6 +35,20 @@ def output_generator():
             
         time.sleep(Config.outputFileWriteInterval)
 
+def file_parser():
+    while True: 
+        parser = OpenVpnParser()
+        data = parser.parseOpenVpnStatus(Config.inputFileName)    
+        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb.create_connection_table()
+        for connection in data:
+            existing = connectionDb.select_connection(connection.common_name, connection.connected_since)
+            if existing: 
+                connectionDb.update_connection(connection)
+            else:
+                connectionDb.insert_connection(connection)
+        time.sleep(Config.inputFileParseInterval)
+
 def main():
     output_generator_thread = threading.Thread(target=output_generator)
     output_generator_thread.daemon = True
@@ -49,18 +62,9 @@ def main():
     ip_retriever_thread.daemon = True
     ip_retriever_thread.start()
 
-    while True: 
-        parser = OpenVpnParser()
-        data = parser.parseOpenVpnStatus(Config.inputFileName)    
-        connectionDb = ConnectionDB(Config.dbFileName)
-        connectionDb.create_connection_table()
-        for connection in data:
-            existing = connectionDb.select_connection(connection.common_name, connection.connected_since)
-            if existing: 
-                connectionDb.update_connection(connection)
-            else:
-                connectionDb.insert_connection(connection)
-        time.sleep(Config.inputFileParseInterval)
+    file_parser_thread = threading.Thread(target=file_parser)
+    file_parser_thread.daemon = True
+    file_parser_thread.start()
     
 if __name__ == "__main__":
     main()
