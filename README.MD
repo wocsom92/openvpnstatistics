@@ -36,7 +36,7 @@ output file format:
 1. Clone this repository to your local machine.
 
    ```bash
-   git clone https://github.com/wocsom92/openvpn-connection-monitor.git
+   git clone https://github.com/wocsom92/openvpnstatistics.git
 
 ## Usage
 
