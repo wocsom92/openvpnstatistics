@@ -18,9 +18,16 @@ The OpenVPN Connection Monitor consists of a set of Python scripts that work tog
 
 2. **Storing Connections**: It uses the `ConnectionDB` class to manage connection information and store data in a database.
 
-3. **Generating Connection Statistics**: The script generates connection statistics for each user, including daily, weekly, and monthly data usage. These statistics are then formatted and written to an output file.
+3. **Generating Connection Statistics**: The script generates connection statistics for each user, including **daily**, **weekly**, and **monthly** data usage. These statistics are then formatted and written to an output file.
 
-4. **Multithreading**: The script utilizes threading to concurrently manage both data parsing and output generation.
+output file format: 
+```bash
+    User1    104 kB   21 kB  427 kB  129 kB  427 kB  129 kB 23-08-21 16:13 
+    User2    936 MB   53 MB 5.29 GB  147 MB 5.29 GB  147 MB 23-08-21 18:44 
+    User3    539 MB   27 MB 7.84 GB  288 MB 7.84 GB  288 MB 23-08-21 19:00 
+    User4    263 MB   16 MB 1.06 GB   72 MB 1.06 GB   72 MB 23-08-21 18:59 
+    User5    677 MB   11 MB 4.67 GB  236 MB 4.67 GB  236 MB 23-08-21 16:32 
+```
 
 ## Installation
 
@@ -32,9 +39,12 @@ The OpenVPN Connection Monitor consists of a set of Python scripts that work tog
 ## Usage
 
 1.) Configure the script by modifying the config.py file to set your desired input and output file names, as well as other parameters.
+
 2.) Run the main script to start monitoring OpenVPN connections and generating statistics.
-    ```bash
+    
+```bash
     python main.py
+```
 
 The script will run indefinitely, parsing OpenVPN status data at specified intervals and generating the connection statistics output.
 

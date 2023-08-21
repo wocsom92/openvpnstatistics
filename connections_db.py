@@ -1,11 +1,13 @@
 import sqlite3
 from datetime import datetime, date, timedelta
 from connection import Connection
+from config import Config
+from ip_info import IpInfo
 
 class ConnectionDB:
     def __init__(self, db_name ):
         self.db_name = db_name + '.db'
-    def create_connection_database(self):
+    def create_connection_table(self):
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
@@ -18,7 +20,32 @@ class ConnectionDB:
                     bytes_sent INTEGER,
                     connected_since DATETIME,
                     db_updated DATETIME,
+                    ip_id INTEGER,
                     PRIMARY KEY (common_name, connected_since)
+                )
+            ''')
+            
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+    
+    def create_ip_table(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS ips (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ip TEXT,
+                    city TEXT,
+                    region TEXT,
+                    country TEXT,
+                    table_updated DATETIME
                 )
             ''')
             
@@ -98,8 +125,8 @@ class ConnectionDB:
             result = c.fetchone()
 
             if result:
-                common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated = result
-                return Connection(common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated)
+                common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated, ip_id = result
+                return Connection(common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated, ip_id)
             else:
                 return None
         except sqlite3.Error as e:
@@ -124,8 +151,8 @@ class ConnectionDB:
 
             connections = []
             for result in results:
-                common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated = result
-                connection = Connection(common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated)
+                common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated, ip_id = result
+                connection = Connection(common_name, real_address, bytes_received, bytes_sent, connected_since, db_updated, ip_id)
                 connections.append(connection)
 
             return connections
@@ -302,3 +329,119 @@ class ConnectionDB:
             print("An unexpected error occurred:", e)
             return None, None
 
+    def remove_old_connections(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            delta = datetime.now() - timedelta(days=Config.db_clean_how_many_days_keep_data)
+            threshold_date = delta.strftime("%Y-%m-%d %H:%M:%S")
+
+            c.execute('''
+                DELETE FROM connections WHERE db_updated < ?
+            ''', (threshold_date,))
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+    
+    def get_list_of_unassigned_ips(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                SELECT distinct SUBSTR(real_address, 1, INSTR(real_address, ':') - 1) AS result FROM connections;
+            ''')
+
+            result = c.fetchall()
+
+            conn.close()
+
+            return result
+
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+            return None
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            return None
+    
+    def insert_ip_location(self, ip, country, region, city):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            
+            c.execute('''
+                INSERT INTO ips (ip, country, region, city, table_updated)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (ip, country, region, city, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+
+    def select_ip_id(self, ip):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                SELECT id
+                FROM ips
+                WHERE ip LIKE ?
+            ''', (ip, ))
+
+            result = c.fetchone()
+
+            conn.close()
+
+            if result and result[0]:
+                return result[0]
+            else:
+                return None
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+            return None
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            return None
+        
+    def update_ip_ids(self, ip, id):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                UPDATE connections
+                SET ip_id = ?
+                WHERE SUBSTR(real_address, 1, INSTR(real_address, ':') - 1) LIKE ?
+            ''', (id, ip))
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+        
+    def match_ips_with_location(self, ips):
+        for ip in ips:
+            ip = ip[0]
+            location_data = IpInfo.get_ip_location(ip)
+            if(location_data):
+                self.insert_ip_location(ip, location_data.get("country", "Unknown Country"), location_data.get("region", "Unknown Region"), location_data.get("city", "Unknown City"))
+                self.update_ip_ids(ip, self.select_ip_id(ip))
+    def update_missing_connections(self):
+        ips = self.get_list_of_unassigned_ips()
+        print(ips)
+        self.match_ips_with_location(ips)

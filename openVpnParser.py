@@ -17,7 +17,8 @@ class OpenVpnParser:
                     bytes_received=int(bytes_received),
                     bytes_sent=int(bytes_sent),
                     connected_since=connected_since,
-                    db_updated=''
+                    db_updated='',
+                    ip_id = 0
                 )
                 connections.append(connection)
         return connections

@@ -6,6 +6,19 @@ from config import Config
 import time
 import threading
 
+def ip_retriever():
+    while True:
+        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb.create_ip_table()
+        connectionDb.update_missing_connections()
+        time.sleep(Config.ip_update_interval)
+
+def db_clean():
+    while True:
+        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb.remove_old_connections()
+        time.sleep(Config.db_clean_interval)
+
 def output_generator():
     while True:
         connectionDb = ConnectionDB(Config.dbFileName)
@@ -24,15 +37,23 @@ def output_generator():
         time.sleep(Config.outputFileWriteInterval)
 
 def main():
-    second_thread = threading.Thread(target=output_generator)
-    second_thread.daemon = True
-    second_thread.start()
+    output_generator_thread = threading.Thread(target=output_generator)
+    output_generator_thread.daemon = True
+    output_generator_thread.start()
+
+    dbclean_thread = threading.Thread(target=db_clean)
+    dbclean_thread.daemon = True
+    dbclean_thread.start()
+
+    ip_retriever_thread = threading.Thread(target=ip_retriever)
+    ip_retriever_thread.daemon = True
+    ip_retriever_thread.start()
 
     while True: 
         parser = OpenVpnParser()
         data = parser.parseOpenVpnStatus(Config.inputFileName)    
         connectionDb = ConnectionDB(Config.dbFileName)
-        connectionDb.create_connection_database()
+        connectionDb.create_connection_table()
         for connection in data:
             existing = connectionDb.select_connection(connection.common_name, connection.connected_since)
             if existing: 
