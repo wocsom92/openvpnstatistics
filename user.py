@@ -12,13 +12,26 @@ class User:
         self.online = online
 
     def print_info(self):
-        info = f"{self.name:10} "
-        info += f"{self.bytes_in_day/1024/1024:10.2f} MB "
-        info += f"{self.bytes_out_day/1024/1024:10.2f} MB "
-        info += f"{self.bytes_week_in/1024/1024:10.2f} MB "
-        info += f"{self.bytes_week_out/1024/1024:10.2f} MB "
-        info += f"{self.bytes_in_month/1024/1024:10.2f} MB "
-        info += f"{self.bytes_out_month/1024/1024:10.2f} MB "
+        info = f"{self.name:6} "
+        info += self.formatBytes( self.bytes_in_day ) + " "
+        info += self.formatBytes( self.bytes_out_day ) + " "
+        info += self.formatBytes( self.bytes_week_in ) + " "
+        info += self.formatBytes( self.bytes_week_out ) + " "
+        info += self.formatBytes( self.bytes_in_month ) + " "
+        info += self.formatBytes( self.bytes_out_month ) + " "
         info += f"{self.last_seen:15} "
-        info += f"{self.online:10}"
         return info
+    
+    def formatBytes(self, bytes):
+        if(bytes < 1024):
+            return f"{bytes:4.0f}" + "  B"
+        if( bytes < 1024*1024):
+            return  f"{bytes/1024:4.0f}"+ " kB"
+        if( bytes < 1024*1024*1024):
+            return  f"{bytes/1024/1024:4.0f}" + " MB"
+        if( bytes < 1024*1024*1024*1024):
+            return  f"{bytes/1024/1024/1024:4.0f}" + " GB"
+        if( bytes < 1024*1024*1024*1024*1024):
+            return  f"{bytes/1024/1024/1024/1024:4.0f}" + " TB"
+        else:
+            return f"{bytes:5.0f}" + "  B"
