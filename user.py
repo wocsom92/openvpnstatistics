@@ -12,14 +12,14 @@ class User:
         self.online = online
 
     def print_info(self):
-        info = f"{self.name:6} "
+        info = f"{self.name:7} "
         info += self.formatBytes( self.bytes_in_day ) + " "
         info += self.formatBytes( self.bytes_out_day ) + " "
         info += self.formatBytes( self.bytes_week_in ) + " "
         info += self.formatBytes( self.bytes_week_out ) + " "
         info += self.formatBytes( self.bytes_in_month ) + " "
         info += self.formatBytes( self.bytes_out_month ) + " "
-        info += f"{self.last_seen:15} "
+        info += f"{self.last_seen[2:-3]:10} "
         return info
     
     def formatBytes(self, bytes):
@@ -30,8 +30,8 @@ class User:
         if( bytes < 1024*1024*1024):
             return  f"{bytes/1024/1024:4.0f}" + " MB"
         if( bytes < 1024*1024*1024*1024):
-            return  f"{bytes/1024/1024/1024:4.0f}" + " GB"
+            return  f"{bytes/1024/1024/1024:4.2f}" + " GB"
         if( bytes < 1024*1024*1024*1024*1024):
-            return  f"{bytes/1024/1024/1024/1024:4.0f}" + " TB"
+            return  f"{bytes/1024/1024/1024/1024:4.2f}" + " TB"
         else:
             return f"{bytes:5.0f}" + "  B"
