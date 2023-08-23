@@ -35,8 +35,8 @@ def output_generator():
             
         time.sleep(Config.outputFileWriteInterval)
 
-def file_parser():
-    while True: 
+def file_parse():
+    while True:
         parser = OpenVpnParser()
         data = parser.parseOpenVpnStatus(Config.inputFileName)    
         connectionDb = ConnectionDB(Config.dbFileName)
@@ -62,9 +62,12 @@ def main():
     ip_retriever_thread.daemon = True
     ip_retriever_thread.start()
 
-    file_parser_thread = threading.Thread(target=file_parser)
+    file_parser_thread = threading.Thread(target=file_parse)
     file_parser_thread.daemon = True
     file_parser_thread.start()
+
+    while True:
+        pass
     
 if __name__ == "__main__":
     main()

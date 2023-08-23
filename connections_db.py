@@ -349,13 +349,13 @@ class ConnectionDB:
         finally:
             conn.close()
     
-    def get_list_of_unassigned_ips(self):
+    def get_list_of_unassigned_ips_from_connections(self):
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
 
             c.execute('''
-                SELECT distinct SUBSTR(real_address, 1, INSTR(real_address, ':') - 1) AS result FROM connections;
+                SELECT distinct SUBSTR(real_address, 1, INSTR(real_address, ':') - 1) AS result FROM connections WHERE ip_id is NULL;
             ''')
 
             result = c.fetchall()
@@ -439,9 +439,9 @@ class ConnectionDB:
             ip = ip[0]
             location_data = IpInfo.get_ip_location(ip)
             if(location_data):
-                self.insert_ip_location(ip, location_data.get("country", "Unknown Country"), location_data.get("region", "Unknown Region"), location_data.get("city", "Unknown City"))
+                if(self.select_ip_id(ip) == None):
+                    self.insert_ip_location(ip, location_data.get("country", "Unknown Country"), location_data.get("region", "Unknown Region"), location_data.get("city", "Unknown City"))
                 self.update_ip_ids(ip, self.select_ip_id(ip))
     def update_missing_connections(self):
-        ips = self.get_list_of_unassigned_ips()
-        print(ips)
+        ips = self.get_list_of_unassigned_ips_from_connections()
         self.match_ips_with_location(ips)
