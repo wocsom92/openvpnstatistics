@@ -8,23 +8,23 @@ import threading
 
 def ip_retriever():
     while True:
-        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb = ConnectionDB(Config.db_file_mame)
         connectionDb.create_ip_table()
         connectionDb.update_missing_connections()
         time.sleep(Config.ip_update_interval)
 
 def db_clean():
     while True:
-        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb = ConnectionDB(Config.db_file_mame)
         connectionDb.remove_old_connections()
         connectionDb.vacuum()
         time.sleep(Config.db_clean_interval)
 
 def output_txt_file_generator():
     while True:
-        connectionDb = ConnectionDB(Config.dbFileName)
+        connectionDb = ConnectionDB(Config.db_file_mame)
         users = connectionDb.select_distinct_common_names()
-        with open(Config.outputFileName, 'w') as file:
+        with open(Config.output_file_name, 'w') as file:
             pass
         for user in users:
             lastSeen = connectionDb.select_last_seen(user)
@@ -32,22 +32,22 @@ def output_txt_file_generator():
             inBytesWeek, outBytesWeek = connectionDb.select_sum_bytes_for_last_week(user)
             inBytesMonth, outBytesMonth = connectionDb.select_sum_bytes_for_last_month(user)
             formatedUser = User(user, inBytesToday, outBytesToday, inBytesWeek, outBytesWeek, inBytesMonth, outBytesMonth, lastSeen, '')
-            with open(Config.outputFileName, 'a') as file:
+            with open(Config.output_file_name, 'a') as file:
                 file.write( formatedUser.print_info() + '\n')
             
-        time.sleep(Config.outputFileWriteInterval)
+        time.sleep(Config.output_file_write_interval)
 
 def output_web_file_generator():
     while True:
-        webGenerator = WebGenerator( Config.webFilePath )
+        webGenerator = WebGenerator( Config.web_file_path )
         webGenerator.generate()
-        time.sleep(Config.outputFileWriteInterval)
+        time.sleep(Config.output_file_write_interval)
 
 def file_parse():
     while True:
         parser = OpenVpnParser()
-        data = parser.parseOpenVpnStatus(Config.inputFileName)    
-        connectionDb = ConnectionDB(Config.dbFileName)
+        data = parser.parseOpenVpnStatus(Config.input_file_mame)    
+        connectionDb = ConnectionDB(Config.db_file_mame)
         connectionDb.create_connection_table()
         for connection in data:
             existing = connectionDb.select_connection(connection.common_name, connection.connected_since)
@@ -55,7 +55,7 @@ def file_parse():
                 connectionDb.update_connection(connection)
             else:
                 connectionDb.insert_connection(connection)
-        time.sleep(Config.inputFileParseInterval)
+        time.sleep(Config.input_file_parse_interval)
 
 def main():
     output__txt_file_generator_thread = threading.Thread(target=output_txt_file_generator)

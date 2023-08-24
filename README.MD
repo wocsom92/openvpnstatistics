@@ -58,15 +58,15 @@ The script will run indefinitely, parsing OpenVPN status data at specified inter
 
 You can customize the behavior of the OpenVPN Connection Monitor by modifying the parameters in the `config.py` file. Here are some of the configurable options:
 
-- `inputFileName`: Name of the input file containing OpenVPN status data, usually '/var/log/openvpn/status.log'
-- `inputFileParseInterval`: Interval (in seconds) at which the script should parse OpenVPN status data.
-- `dbFileName`: Name of the output connection database file.
-- `outputFileName`: Name of the output file for connection statistics.
-- `outputFileWriteInterval`: Interval (in seconds) at which the script should generate and update the output file.
+- `input_file_name`: Name of the input file containing OpenVPN status data, usually '/var/log/openvpn/status.log'
+- `input_file_parse_interval`: Interval (in seconds) at which the script should parse OpenVPN status data.
+- `db_file_name`: Name of the output connection database file.
+- `output_file_name`: Name of the output file for connection statistics.
+- `output_file_write_interval`: Interval (in seconds) at which the script should generate and update the output file.
 - `db_clean_interval`: Interval (in seconds) at which the script should clean and vacuum db.
 - `db_clean_how_many_days_keep_data`: Interval (in days) at which the script should keep connections data db.
 - `ip_update_interval`: Interval (in seconds) at which the script should update ip locations data.
-- `webFilePath`: Name and location of the output file for example: '/var/www/html/vpn.html'
+- `web_file_path`: Name and location of the output file for example: '/var/www/html/vpn.html'
 
 ## License
 

@@ -6,21 +6,21 @@ class WebGenerator:
         self.file_name = file_name 
     
     def generate(self):
-        connectionDb = ConnectionDB( Config.dbFileName )
+        connectionDb = ConnectionDB( Config.db_file_mame )
         users = connectionDb.select_distinct_common_names()
-        with open(Config.webFilePath, 'w') as file:
+        with open(Config.web_file_path, 'w') as file:
             pass
-        with open(Config.webFilePath, 'a') as file:
+        with open(Config.web_file_path, 'a') as file:
                 file.write( self.html_part1() )
         for user in users:
             lastSeen = connectionDb.select_last_seen(user)
             inBytesToday, outBytesToday = connectionDb.select_sum_bytes_for_current_day(user)
             inBytesWeek, outBytesWeek = connectionDb.select_sum_bytes_for_last_week(user)
             inBytesMonth, outBytesMonth = connectionDb.select_sum_bytes_for_last_month(user)
-            with open(Config.webFilePath, 'a') as file:
+            with open(Config.web_file_path, 'a') as file:
                 file.write(  self.html_card(user, lastSeen, inBytesToday, outBytesToday, inBytesWeek, outBytesWeek, inBytesMonth, outBytesMonth) )
         
-        with open(Config.webFilePath, 'a') as file:
+        with open(Config.web_file_path, 'a') as file:
                 file.write( self.html_last_part() )
 
     def html_part1(self):
