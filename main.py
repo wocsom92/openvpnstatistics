@@ -2,6 +2,7 @@ from openVpnParser import OpenVpnParser
 from connections_db import ConnectionDB
 from user import User
 from config import Config
+from web_generator import WebGenerator
 import time
 import threading
 
@@ -19,7 +20,7 @@ def db_clean():
         connectionDb.vacuum()
         time.sleep(Config.db_clean_interval)
 
-def output_generator():
+def output_txt_file_generator():
     while True:
         connectionDb = ConnectionDB(Config.dbFileName)
         users = connectionDb.select_distinct_common_names()
@@ -34,6 +35,12 @@ def output_generator():
             with open(Config.outputFileName, 'a') as file:
                 file.write( formatedUser.print_info() + '\n')
             
+        time.sleep(Config.outputFileWriteInterval)
+
+def output_web_file_generator():
+    while True:
+        webGenerator = WebGenerator( Config.webFilePath )
+        webGenerator.generate()
         time.sleep(Config.outputFileWriteInterval)
 
 def file_parse():
@@ -51,9 +58,13 @@ def file_parse():
         time.sleep(Config.inputFileParseInterval)
 
 def main():
-    output_generator_thread = threading.Thread(target=output_generator)
-    output_generator_thread.daemon = True
-    output_generator_thread.start()
+    output__txt_file_generator_thread = threading.Thread(target=output_txt_file_generator)
+    output__txt_file_generator_thread.daemon = True
+    output__txt_file_generator_thread.start()
+
+    output__web_file_generator_thread = threading.Thread(target=output_web_file_generator)
+    output__web_file_generator_thread.daemon = True
+    output__web_file_generator_thread.start()
 
     dbclean_thread = threading.Thread(target=db_clean)
     dbclean_thread.daemon = True

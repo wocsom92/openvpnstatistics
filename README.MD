@@ -20,7 +20,7 @@ The OpenVPN Statistics consists of a set of Python scripts that work together to
 
 2. **Storing Connections**: It uses the `ConnectionDB` class to manage connection information and store data in a database.
 
-3. **Generating Connection Statistics**: The script generates connection statistics for each user, including **daily**, **weekly**, and **monthly** data usage. These statistics are then formatted and written to an output file.
+3. **Generating Connection Statistics**: The script generates connection statistics for each user, including **daily**, **weekly**, and **monthly** data usage. These statistics are then formatted and written to an output text file and html file.
 
 output file format: 
 ```bash
@@ -30,6 +30,10 @@ output file format:
     User4    263 MB   16 MB 1.06 GB   72 MB 1.06 GB   72 MB 23-08-21 18:59 
     User5    677 MB   11 MB 4.67 GB  236 MB 4.67 GB  236 MB 23-08-21 16:32 
 ```
+
+html file:
+![Htlm File](data/screenshot.png)
+
 
 ## Installation
 
@@ -62,6 +66,7 @@ You can customize the behavior of the OpenVPN Connection Monitor by modifying th
 - `db_clean_interval`: Interval (in seconds) at which the script should clean and vacuum db.
 - `db_clean_how_many_days_keep_data`: Interval (in days) at which the script should keep connections data db.
 - `ip_update_interval`: Interval (in seconds) at which the script should update ip locations data.
+- `webFilePath`: Name and location of the output file for example: '/var/www/html/vpn.html'
 
 ## License
 
