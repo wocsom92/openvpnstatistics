@@ -1,4 +1,5 @@
 import sqlite3
+import os
 from datetime import datetime, date, timedelta
 from connection import Connection
 from config import Config
@@ -6,7 +7,9 @@ from ip_info import IpInfo
 
 class ConnectionDB:
     def __init__(self, db_name ):
-        self.db_name = db_name + '.db'
+        folder_name = "data"
+        file_name = db_name + '.db'
+        self.db_name = os.path.join(folder_name, file_name)
     def create_connection_table(self):
         try:
             conn = sqlite3.connect(self.db_name)
@@ -349,6 +352,23 @@ class ConnectionDB:
         finally:
             conn.close()
     
+    def vacuum(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                VACUUM;
+            ''')
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+
     def get_list_of_unassigned_ips_from_connections(self):
         try:
             conn = sqlite3.connect(self.db_name)

@@ -16,6 +16,7 @@ def db_clean():
     while True:
         connectionDb = ConnectionDB(Config.dbFileName)
         connectionDb.remove_old_connections()
+        connectionDb.vacuum()
         time.sleep(Config.db_clean_interval)
 
 def output_generator():
