@@ -1,6 +1,6 @@
-# OpenVPN Connection Monitor
+# OpenVPN Statistics
 
-The **OpenVPN Connection Monitor** is a Python script designed to parse OpenVPN status data, track user connections, and generate an output file with connection statistics.
+The **OpenVPN Statistics** is a Python script designed to parse OpenVPN status data, track user connections, and generate an output file with connection statistics.
 
 ## Table of Contents
 
@@ -14,7 +14,7 @@ The **OpenVPN Connection Monitor** is a Python script designed to parse OpenVPN 
 
 ![C4 Diagram](data/vpnparser.drawio.png)
 
-The OpenVPN Connection Monitor consists of a set of Python scripts that work together to achieve the following tasks:
+The OpenVPN Statistics consists of a set of Python scripts that work together to achieve the following tasks:
 
 1. **Parsing OpenVPN Status**: The script utilizes the `OpenVpnParser` class to parse OpenVPN status data from a specified input file.
 
@@ -42,7 +42,7 @@ output file format:
 
 1.) Configure the script by modifying the config.py file to set your desired input and output file names, as well as other parameters.
 
-2.) Run the main script to start monitoring OpenVPN connections and generating statistics.
+2.) Run the main script to start monitoring OpenVPN connections and generating statistics. Program will run in 4 threads. 
     
 ```bash
     python3 main.py
@@ -54,11 +54,14 @@ The script will run indefinitely, parsing OpenVPN status data at specified inter
 
 You can customize the behavior of the OpenVPN Connection Monitor by modifying the parameters in the `config.py` file. Here are some of the configurable options:
 
-- `dbFileName`: Name of the connection database file.
-- `inputFileName`: Name of the input file containing OpenVPN status data.
-- `outputFileName`: Name of the output file for connection statistics.
+- `inputFileName`: Name of the input file containing OpenVPN status data, usually '/var/log/openvpn/status.log'
 - `inputFileParseInterval`: Interval (in seconds) at which the script should parse OpenVPN status data.
+- `dbFileName`: Name of the output connection database file.
+- `outputFileName`: Name of the output file for connection statistics.
 - `outputFileWriteInterval`: Interval (in seconds) at which the script should generate and update the output file.
+- `db_clean_interval`: Interval (in seconds) at which the script should clean and vacuum db.
+- `db_clean_how_many_days_keep_data`: Interval (in days) at which the script should keep connections data db.
+- `ip_update_interval`: Interval (in seconds) at which the script should update ip locations data.
 
 ## License
 
