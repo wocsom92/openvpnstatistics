@@ -1,5 +1,6 @@
 from connections_db import ConnectionDB
 from config import Config
+from datetime import datetime, timedelta
 
 class WebGenerator:
     def __init__(self, file_name ):
@@ -63,6 +64,30 @@ class WebGenerator:
             box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
         }
 
+        .status-icon {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .online {
+            background-color: green;
+        }
+
+        .offline {
+            background-color: red;
+        }
+
+        .away {
+            background-color: orange;
+        }
+
+        .long-time-off {
+            background-color: gray;
+        }
+
         h2 {
             font-size: 20px;
             margin-top: 0;
@@ -85,12 +110,38 @@ class WebGenerator:
             .user-card {
                 width: calc(50% - 40px); /* 2 users per row */
             }
+            .last-refreshed {
+                width: calc(50% - 40px); /* 2 users per row */
+            }
         }
 
         @media screen and (max-width: 480px) {
             .user-card {
                 width: 100%; /* 1 user per row */
             }
+            .last-refreshed {
+                width: 100%; /* 1 user per row */
+            }
+        }
+
+        .last-refreshed {
+            background-color: #333333;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .last-refreshed:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .last-refreshed span {
+            font-weight: bold;
+            color: #dddddd;
         }
     </style>
 </head>
@@ -99,21 +150,44 @@ class WebGenerator:
 '''
 
     def html_last_part(self):
+         current_time = datetime.now()
+         formatted_time = current_time.strftime("%B %d %H:%M")
          return '''
+         <div class="last-refreshed">
+        Last Refreshed: <span>''' + formatted_time + '''</span>
+    </div>
 </div>
 </body>
 </html>
 '''
 
     def html_card(self, username, last_seen, inBytesToday, outBytesToday, inBytesWeek, outBytesWeek, inBytesMonth, outBytesMonth ):
+        current_time = datetime.now()
+        last_seen_data = datetime.strptime(last_seen, "%Y-%m-%d %H:%M:%S")
+        time_difference = current_time - last_seen_data
+
+        online_threshold = timedelta(minutes=10)
+        away_treshold = timedelta(hours=1)
+        offline_treshold = timedelta(hours=24)
+# Check if Last Seen time is within the threshold
+        if time_difference <= online_threshold:
+            status = 'online'
+        else:
+            if time_difference < away_treshold:
+                status = 'away'
+            else:
+                if time_difference < offline_treshold:
+                    status = 'offline'
+                else:
+                    status = 'long-time-off'
         card_text = '''
         <div class="user-card">
-            <h2>''' + str( username[0] )  + '''</h2>
+            <h2>''' + str( username[0] )  + ''' <span class="status-icon '''+ status + '''"></span> ''' + '''</h2>
+
             <div class="traffic-data">
                 <p class="traffic-label">Daily  Usage: ''' + self.formatBytes( inBytesToday ) + '''</p>
                 <p class="traffic-label">Weekly Usage: ''' + self.formatBytes( inBytesWeek ) + '''</p>
                 <p class="traffic-label">Monthly Usage: ''' + self.formatBytes( inBytesMonth )  + '''</p>
-                <p class="traffic-label">Last Seen: ''' + f"{last_seen[2:-3]:10} "  + '''</p>
             </div>
         </div>'''
          

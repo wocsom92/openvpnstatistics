@@ -46,7 +46,7 @@ def output_web_file_generator():
 def file_parse():
     while True:
         parser = OpenVpnParser()
-        data = parser.parseOpenVpnStatus(Config.input_file_mame)    
+        data = parser.parseOpenVpnStatus(Config.input_file_name)    
         connectionDb = ConnectionDB(Config.db_file_mame)
         connectionDb.create_connection_table()
         for connection in data:
