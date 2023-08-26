@@ -1,6 +1,7 @@
 from connections_db import ConnectionDB
 from config import Config
 from datetime import datetime, timedelta
+import os
 
 class WebGenerator:
     def __init__(self, file_name ):
@@ -48,7 +49,8 @@ class WebGenerator:
             margin: 0 auto;
         }
 
-        .user-card {
+        .user-card,
+        .location-card {
             background-color: #333333;
             border-radius: 10px;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -59,7 +61,8 @@ class WebGenerator:
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .user-card:hover {
+        .user-card:hover,
+        .location-card:hover {
             transform: translateY(-5px);
             box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
         }
@@ -108,10 +111,13 @@ class WebGenerator:
         /* Responsive adjustments */
         @media screen and (max-width: 768px) {
             .user-card {
-                width: calc(50% - 40px); /* 2 users per row */
+                width: 100%; /* 1 user per row */
             }
             .last-refreshed {
-                width: calc(50% - 40px); /* 2 users per row */
+                width: 100%; /* 1 user per row */
+            }
+            .location-card {
+                width: 100%; /* 1 user per row */
             }
         }
 
@@ -120,6 +126,9 @@ class WebGenerator:
                 width: 100%; /* 1 user per row */
             }
             .last-refreshed {
+                width: 100%; /* 1 user per row */
+            }
+            .location-card {
                 width: 100%; /* 1 user per row */
             }
         }
@@ -143,6 +152,43 @@ class WebGenerator:
             font-weight: bold;
             color: #dddddd;
         }
+        .location-card h2 {
+            font-size: 24px;
+            color: #e74c3c; /* Red color for the header */
+            margin-bottom: 10px;
+        }
+
+        .location-data ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .location-data li {
+            font-size: 14px;
+            color: #aaaaaa;
+            margin-bottom: 10px; /* Increased spacing between list items */
+            padding-left: 15px; /* Left padding for better separation */
+            position: relative;
+        }
+
+        .location-data li strong {
+            color: #ffffff; /* White color for strong elements */
+        }
+
+        .location-data li::before {
+            content: "▹"; /* Using a bullet symbol for better visual separation */
+            color: #3498db; /* Blue color for the bullet symbol */
+            font-size: 10px;
+            position: absolute;
+            left: 0;
+        }
+
+        .location-group {
+            margin-top: 15px;
+            border-top: 1px solid #aaaaaa;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -152,14 +198,31 @@ class WebGenerator:
     def html_last_part(self):
          current_time = datetime.now()
          formatted_time = current_time.strftime("%B %d %H:%M")
-         return '''
+
+         folder_name = "data"
+         file_name = Config.db_file_mame + '.db'
+         file_path = os.path.join(folder_name, file_name)
+         db_size = 0
+
+         if os.path.exists(file_path):
+            db_size = os.path.getsize(file_path)
+        
+         connectionDb = ConnectionDB( Config.db_file_mame )
+         ipCount = connectionDb.ipCount()
+         locations = connectionDb.selectLocations()
+
+         retVal = '''
          <div class="last-refreshed">
-        Last Refreshed: <span>''' + formatted_time + '''</span>
-    </div>
-</div>
+            <p>Last Refreshed: <span>''' + formatted_time + '''</span></p>
+            <p>Db size: <span>''' + self.formatBytes(db_size) + '''</span></p>
+            <p>Ips: <span>''' + str(ipCount[0]) + '''</span></p>
+        </div>'''
+         retVal = retVal + self.html_location_card()
+         retVal = retVal +'''</div>
 </body>
 </html>
 '''
+         return retVal
 
     def html_card(self, username, last_seen, inBytesToday, outBytesToday, inBytesWeek, outBytesWeek, inBytesMonth, outBytesMonth ):
         current_time = datetime.now()
@@ -206,3 +269,28 @@ class WebGenerator:
             return  f"{bytes/1024/1024/1024/1024:4.2f}" + " TB"
         else:
             return f"{bytes:5.0f}" + "  B"
+        
+    def html_location_card(self):
+        connectionDb = ConnectionDB( Config.db_file_mame )
+        locations = connectionDb.selectLocations()
+        retVal = '''
+        <!-- Location Card -->
+        <div class="location-card">
+            <h2>Location Information</h2>
+            <div class="location-data">
+        '''
+        for location in locations:
+            retVal += '''
+                <div class="location-group">
+                    <ul>
+                        <li><strong>City: </strong>''' + location[2]+ '''</li>
+                        <li><strong>Region: </strong>''' + location[1] + '''</li>
+                        <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                    </ul>
+                </div>
+            '''
+        retVal += '''          
+            </div>
+        </div>
+        '''
+        return retVal

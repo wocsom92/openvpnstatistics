@@ -20,23 +20,6 @@ def db_clean():
         connectionDb.vacuum()
         time.sleep(Config.db_clean_interval)
 
-def output_txt_file_generator():
-    while True:
-        connectionDb = ConnectionDB(Config.db_file_mame)
-        users = connectionDb.select_distinct_common_names()
-        with open(Config.output_file_name, 'w') as file:
-            pass
-        for user in users:
-            lastSeen = connectionDb.select_last_seen(user)
-            inBytesToday, outBytesToday = connectionDb.select_sum_bytes_for_current_day(user)
-            inBytesWeek, outBytesWeek = connectionDb.select_sum_bytes_for_last_week(user)
-            inBytesMonth, outBytesMonth = connectionDb.select_sum_bytes_for_last_month(user)
-            formatedUser = User(user, inBytesToday, outBytesToday, inBytesWeek, outBytesWeek, inBytesMonth, outBytesMonth, lastSeen, '')
-            with open(Config.output_file_name, 'a') as file:
-                file.write( formatedUser.print_info() + '\n')
-            
-        time.sleep(Config.output_file_write_interval)
-
 def output_web_file_generator():
     while True:
         webGenerator = WebGenerator( Config.web_file_path )
@@ -58,9 +41,6 @@ def file_parse():
         time.sleep(Config.input_file_parse_interval)
 
 def main():
-    output__txt_file_generator_thread = threading.Thread(target=output_txt_file_generator)
-    output__txt_file_generator_thread.daemon = True
-    output__txt_file_generator_thread.start()
 
     output__web_file_generator_thread = threading.Thread(target=output_web_file_generator)
     output__web_file_generator_thread.daemon = True

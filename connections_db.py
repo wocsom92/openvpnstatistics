@@ -465,3 +465,61 @@ class ConnectionDB:
     def update_missing_connections(self):
         ips = self.get_list_of_unassigned_ips_from_connections()
         self.match_ips_with_location(ips)
+
+    def selectLocations(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                select distinct  country, region, city  from ips join connections 
+on connections.ip_id = ips.id
+where  DATE(db_updated) >= DATE('now', '-7 days');
+            ''' )
+
+            result = c.fetchall()
+
+            conn.close()
+
+            if result:
+                return result
+            else:
+                return None
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+            return None
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            return None
+        
+    def ipCount(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                SELECT SUM(group_count) AS total_distinct_ips
+FROM (
+    SELECT COUNT(DISTINCT ips.id) AS group_count
+    FROM ips
+    JOIN connections ON connections.ip_id = ips.id
+    WHERE DATE(connections.db_updated) >= DATE('now', '-7 days')
+    GROUP BY ips.country, ips.region, ips.city
+) AS grouped_counts;
+
+            ''' )
+
+            result = c.fetchone()
+
+            conn.close()
+
+            if result:
+                return result
+            else:
+                return None
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+            return None
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            return None
