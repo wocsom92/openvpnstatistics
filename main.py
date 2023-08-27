@@ -16,6 +16,7 @@ async def db_clean():
     while True:
         connectionDb = ConnectionDB(Config.db_file_mame)
         connectionDb.remove_old_connections()
+        connectionDb.remove_unused_ips_connections()
         connectionDb.vacuum()
         await asyncio.sleep(Config.db_clean_interval)
 

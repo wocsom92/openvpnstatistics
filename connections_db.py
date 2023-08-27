@@ -352,6 +352,26 @@ class ConnectionDB:
         finally:
             conn.close()
     
+    def remove_unused_ips_connections(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            delta = datetime.now() - timedelta(days=Config.db_clean_how_many_days_keep_data)
+            threshold_date = delta.strftime("%Y-%m-%d %H:%M:%S")
+
+            c.execute('''
+                delete from ips where id in(select id from ips where id not in( select distinct ip_id from connections))
+            ''')
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+    
     def vacuum(self):
         try:
             conn = sqlite3.connect(self.db_name)
