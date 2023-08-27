@@ -43,9 +43,9 @@ async def file_parse():
 async def main():
     Config.production()
     tasks = [
+        asyncio.create_task(file_parse()),
         asyncio.create_task(db_clean()),
         asyncio.create_task(ip_retriever()),
-        asyncio.create_task(file_parse()),
         asyncio.create_task(output_web_file_generator())
     ]
     await asyncio.gather(*tasks)

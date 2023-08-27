@@ -22,15 +22,6 @@ The OpenVPN Statistics consists of a set of Python scripts that work together to
 
 3. **Generating Connection Statistics**: The script generates connection statistics for each user, including **daily**, **weekly**, and **monthly** data usage. These statistics are then formatted and written to an output text file and html file.
 
-output file format: 
-```bash
-    User1    104 kB   21 kB  427 kB  129 kB  427 kB  129 kB 23-08-21 16:13 
-    User2    936 MB   53 MB 5.29 GB  147 MB 5.29 GB  147 MB 23-08-21 18:44 
-    User3    539 MB   27 MB 7.84 GB  288 MB 7.84 GB  288 MB 23-08-21 19:00 
-    User4    263 MB   16 MB 1.06 GB   72 MB 1.06 GB   72 MB 23-08-21 18:59 
-    User5    677 MB   11 MB 4.67 GB  236 MB 4.67 GB  236 MB 23-08-21 16:32 
-```
-
 html file:
 ![Htlm File](data/screenshot.png)
 

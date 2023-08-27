@@ -8,7 +8,7 @@ class Config:
         db_clean_how_many_days_keep_data = 31
         ip_update_interval = 3600 #once per hour
         web_file_path = '/var/www/html/vpn/vpn.html'
-        
+
         def test():
                 Config.input_file_parse_interval = 14
                 Config.input_file_name = '/data/status.log'
@@ -19,6 +19,7 @@ class Config:
                 Config.db_clean_how_many_days_keep_data = 31
                 Config.ip_update_interval = 10
                 Config.web_file_path = 'data/vpn.html'
+        
         def production():
                 Config.input_file_parse_interval = 14
                 Config.input_file_name = '/var/log/openvpn/status.log'
