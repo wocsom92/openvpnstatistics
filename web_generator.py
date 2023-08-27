@@ -214,8 +214,8 @@ class WebGenerator:
          retVal = '''
          <div class="last-refreshed">
             <p>Last Refreshed: <span>''' + formatted_time + '''</span></p>
-            <p>Db size: <span>''' + self.formatBytes(db_size) + '''</span></p>
-            <p>Ips: <span>''' + str(ipCount[0]) + '''</span></p>
+            <p>Database size: <span>''' + self.formatBytes(db_size) + '''</span></p>
+            <p>Distinct Ips: <span>''' + str(ipCount[0]) + '''</span></p>
         </div>'''
          retVal = retVal + self.html_location_card()
          retVal = retVal +'''</div>
@@ -286,6 +286,7 @@ class WebGenerator:
                         <li><strong>City: </strong>''' + location[2]+ '''</li>
                         <li><strong>Region: </strong>''' + location[1] + '''</li>
                         <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                        <li><strong>Provider: </strong> <br>''' + location[3]+ '''</li>
                     </ul>
                 </div>
             '''

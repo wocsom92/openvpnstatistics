@@ -48,7 +48,8 @@ class ConnectionDB:
                     city TEXT,
                     region TEXT,
                     country TEXT,
-                    table_updated DATETIME
+                    table_updated DATETIME,
+                    provider TEXT
                 )
             ''')
             
@@ -411,15 +412,15 @@ class ConnectionDB:
             print("An unexpected error occurred:", e)
             return None
     
-    def insert_ip_location(self, ip, country, region, city):
+    def insert_ip_location(self, ip, country, region, city, provider):
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
             
             c.execute('''
-                INSERT INTO ips (ip, country, region, city, table_updated)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (ip, country, region, city, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                INSERT INTO ips (ip, country, region, city, table_updated, provider)
+                VALUES (?, ?, ?, ?, ? , ?)
+            ''', (ip, country, region, city, datetime.now().strftime("%Y-%m-%d %H:%M:%S"), provider))
             
             conn.commit()
         except sqlite3.Error as e:
@@ -480,7 +481,11 @@ class ConnectionDB:
             location_data = IpInfo.get_ip_location(ip)
             if(location_data):
                 if(self.select_ip_id(ip) == None):
-                    self.insert_ip_location(ip, location_data.get("country", "Unknown Country"), location_data.get("region", "Unknown Region"), location_data.get("city", "Unknown City"))
+                    self.insert_ip_location(ip, location_data.get("country", "Unknown Country"), 
+                                            location_data.get("region", "Unknown Region"), 
+                                            location_data.get("city", "Unknown City"), 
+                                            location_data.get("org", "Unknown Provider"),
+                                            )
                 self.update_ip_ids(ip, self.select_ip_id(ip))
     def update_missing_connections(self):
         ips = self.get_list_of_unassigned_ips_from_connections()
@@ -492,7 +497,7 @@ class ConnectionDB:
             c = conn.cursor()
 
             c.execute('''
-                select distinct  country, region, city  from ips join connections 
+                select distinct  country, region, city, provider from ips join connections 
 on connections.ip_id = ips.id
 where  DATE(db_updated) >= DATE('now', '-7 days');
             ''' )
