@@ -42,6 +42,7 @@ async def file_parse():
 
 async def main():
     Config.production()
+    #Config.test()
     tasks = [
         asyncio.create_task(file_parse()),
         asyncio.create_task(db_clean()),

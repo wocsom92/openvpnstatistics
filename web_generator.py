@@ -243,16 +243,28 @@ class WebGenerator:
                     status = 'offline'
                 else:
                     status = 'long-time-off'
-        card_text = '''
-        <div class="user-card">
-            <h2>''' + str( username[0] )  + ''' <span class="status-icon '''+ status + '''"></span> ''' + '''</h2>
+        if Config.enable_full_user_name_in_web == True:
+            card_text = '''
+            <div class="user-card">
+                <h2>''' + str( username )  + ''' <span class="status-icon '''+ status + '''"></span> ''' + '''</h2>
 
-            <div class="traffic-data">
-                <p class="traffic-label">Daily  Usage: ''' + self.formatBytes( inBytesToday ) + '''</p>
-                <p class="traffic-label">Weekly Usage: ''' + self.formatBytes( inBytesWeek ) + '''</p>
-                <p class="traffic-label">Monthly Usage: ''' + self.formatBytes( inBytesMonth )  + '''</p>
-            </div>
-        </div>'''
+                <div class="traffic-data">
+                    <p class="traffic-label">Daily  Usage: ''' + self.formatBytes( inBytesToday ) + '''</p>
+                    <p class="traffic-label">Weekly Usage: ''' + self.formatBytes( inBytesWeek ) + '''</p>
+                    <p class="traffic-label">Monthly Usage: ''' + self.formatBytes( inBytesMonth )  + '''</p>
+                </div>
+            </div>'''
+        else:
+            card_text = '''
+            <div class="user-card">
+                <h2>''' + str( username[0] )  + ''' <span class="status-icon '''+ status + '''"></span> ''' + '''</h2>
+
+                <div class="traffic-data">
+                    <p class="traffic-label">Daily  Usage: ''' + self.formatBytes( inBytesToday ) + '''</p>
+                    <p class="traffic-label">Weekly Usage: ''' + self.formatBytes( inBytesWeek ) + '''</p>
+                    <p class="traffic-label">Monthly Usage: ''' + self.formatBytes( inBytesMonth )  + '''</p>
+                </div>
+            </div>'''
          
         return card_text
     
@@ -280,16 +292,27 @@ class WebGenerator:
             <div class="location-data">
         '''
         for location in locations:
-            retVal += '''
-                <div class="location-group">
-                    <ul>
-                        <li><strong>City: </strong>''' + location[2]+ '''</li>
-                        <li><strong>Region: </strong>''' + location[1] + '''</li>
-                        <li><strong>Country: </strong>''' + location[0]+ '''</li>
-                        <li><strong>Provider: </strong> <br>''' + location[3]+ '''</li>
-                    </ul>
-                </div>
-            '''
+            if Config.enable_provider_in_web == True:
+                retVal += '''
+                    <div class="location-group">
+                        <ul>
+                            <li><strong>City: </strong>''' + location[2]+ '''</li>
+                            <li><strong>Region: </strong>''' + location[1] + '''</li>
+                            <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                            <li><strong>Provider: </strong> <br>''' + location[3]+ '''</li>
+                        </ul>
+                    </div>
+                '''
+            else:
+                retVal += '''
+                    <div class="location-group">
+                        <ul>
+                            <li><strong>City: </strong>''' + location[2]+ '''</li>
+                            <li><strong>Region: </strong>''' + location[1] + '''</li>
+                            <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                        </ul>
+                    </div>
+                '''
         retVal += '''          
             </div>
         </div>

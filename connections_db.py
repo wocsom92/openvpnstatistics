@@ -495,12 +495,18 @@ class ConnectionDB:
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
-
-            c.execute('''
-                select distinct  country, region, city, provider from ips join connections 
-on connections.ip_id = ips.id
-where  DATE(db_updated) >= DATE('now', '-7 days');
-            ''' )
+            if Config.enable_provider_in_web == True:
+                c.execute('''
+                    select distinct  country, region, city, provider from ips join connections 
+    on connections.ip_id = ips.id
+    where  DATE(db_updated) >= DATE('now', '-7 days');
+                ''' )
+            else:
+                c.execute('''
+                    select distinct  country, region, city from ips join connections 
+    on connections.ip_id = ips.id
+    where  DATE(db_updated) >= DATE('now', '-7 days');
+                ''' )
 
             result = c.fetchall()
 
