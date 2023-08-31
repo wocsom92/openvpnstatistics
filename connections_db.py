@@ -7,7 +7,7 @@ from ip_info import IpInfo
 
 class ConnectionDB:
     def __init__(self, db_name ):
-        folder_name = "data"
+        folder_name = Config.db_file_location
         file_name = db_name + '.db'
         self.db_name = os.path.join(folder_name, file_name)
     def create_connection_table(self):

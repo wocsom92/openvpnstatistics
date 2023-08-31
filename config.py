@@ -11,11 +11,13 @@ class Config:
         enable_provider_in_web = True
         enable_full_user_name_in_web = True
         ip_information_shown_in_web = 7 #in days
+        db_file_location = 'data'
 
         def test():
                 Config.input_file_parse_interval = 14
                 Config.input_file_name = 'data/status.log'
-                Config.db_file_mame = 'connection'
+                Config.db_file_mame = 'connectionTest'
+                Config.db_file_location = 'data'
                 Config.output_file_name = 'data.txt'
                 Config.output_file_write_interval = 69
                 Config.db_clean_interval = 60 * 60 * 24 #once per day
@@ -30,6 +32,7 @@ class Config:
                 Config.input_file_parse_interval = 14
                 Config.input_file_name = '/var/log/openvpn/status.log'
                 Config.db_file_mame = 'connection'
+                Config.db_file_location = '/shared_data'
                 Config.output_file_name = 'data.txt'
                 Config.output_file_write_interval = 69
                 Config.db_clean_interval = 60 * 60 * 24 #once per day

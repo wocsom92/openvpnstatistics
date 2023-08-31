@@ -199,7 +199,7 @@ class WebGenerator:
          current_time = datetime.now()
          formatted_time = current_time.strftime("%B %d %H:%M")
 
-         folder_name = "data"
+         folder_name = Config.db_file_location
          file_name = Config.db_file_mame + '.db'
          file_path = os.path.join(folder_name, file_name)
          db_size = 0
