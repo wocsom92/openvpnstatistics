@@ -7,11 +7,13 @@ class Config:
         db_clean_interval = 60 * 60 * 24 #once per day
         db_clean_how_many_days_keep_data = 31
         ip_update_interval = 3600 #once per hour
+        sys_update_interval = 3600
         web_file_path = '/var/www/html/vpn/vpn.html'
         enable_provider_in_web = True
         enable_full_user_name_in_web = True
         ip_information_shown_in_web = 7 #in days
         db_file_location = 'data'
+        disk_to_monitor = '/'
 
         def test():
                 Config.input_file_parse_interval = 14
@@ -27,6 +29,8 @@ class Config:
                 Config.enable_provider_in_web = False
                 Config.enable_full_user_name_in_web = True
                 Config.ip_information_shown_in_web = 31
+                Config.sys_update_interval = 30
+                Config.disk_to_monitor = '/dev/disk1s5'
         
         def production():
                 Config.input_file_parse_interval = 14
@@ -42,3 +46,5 @@ class Config:
                 Config.enable_provider_in_web = False
                 Config.enable_full_user_name_in_web = False
                 Config.ip_information_shown_in_web = 7
+                Config.sys_update_interval = 600
+                Config.disk_to_monitor = '/'

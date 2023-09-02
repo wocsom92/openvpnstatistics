@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta
 from connection import Connection
 from config import Config
 from ip_info import IpInfo
+from system_tools import SysteTools
 
 class ConnectionDB:
     def __init__(self, db_name ):
@@ -50,6 +51,31 @@ class ConnectionDB:
                     country TEXT,
                     table_updated DATETIME,
                     provider TEXT
+                )
+            ''')
+            
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+
+    def create_system_table(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS system_resources (
+                    table_updated DATETIME,
+                    disk_percentage INTEGER,
+                    memory INTEGER,
+                    load_average_1 REAL,
+                    load_average_5 REAL,
+                    load_average_15 REAL,
+                    proc_no INTEGER
                 )
             ''')
             
@@ -554,3 +580,55 @@ FROM (
         except Exception as e:
             print("An unexpected error occurred:", e)
             return None
+    def update_system_resources(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+            st = SysteTools()
+
+            table_updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            memory = st.get_ram_percentage()
+            load_average_1 = 0
+            load_average_5 = 0
+            load_average_15 = 0
+            load_average = st.get_load_average()
+            if load_average != None:
+                load_average_1, load_average_5, load_average_15 = load_average
+            proc_no = st.get_number_of_processes()
+            disk_percentage = st.get_disk_usage_percentage()
+
+            c.execute('''
+                INSERT INTO system_resources (table_updated, disk_percentage, memory, load_average_1, load_average_5, load_average_15, proc_no)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (table_updated, disk_percentage, memory, load_average_1, load_average_5, load_average_15, proc_no ))
+            
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
+
+    def select_last_system_resources(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            c.execute('''
+                SELECT * FROM system_resources ORDER BY table_updated DESC LIMIT 1;
+            ''')
+
+            result = c.fetchone()
+            if result:
+                return result
+            else:
+                return None
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+            return None
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+            return None
+        finally:
+            conn.close()

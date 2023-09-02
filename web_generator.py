@@ -209,13 +209,26 @@ class WebGenerator:
         
          connectionDb = ConnectionDB( Config.db_file_mame )
          ipCount = connectionDb.ipCount()
-         locations = connectionDb.selectLocations()
-
-         retVal = '''
+         sys_resources = connectionDb.select_last_system_resources()
+         if sys_resources == None:
+             retVal = '''
          <div class="last-refreshed">
             <p>Last Refreshed: <span>''' + formatted_time + '''</span></p>
             <p>Database size: <span>''' + self.formatBytes(db_size) + '''</span></p>
             <p>Distinct Ips: <span>''' + str(ipCount[0]) + '''</span></p>
+        </div>'''
+         else:
+            retVal = '''
+         <div class="last-refreshed">
+            <p>Last Refreshed: <span>''' + formatted_time + '''</span></p>
+            <p>Database size: <span>''' + self.formatBytes(db_size) + '''</span></p>
+            <p>Distinct Ips: <span>''' + str(ipCount[0]) + '''</span></p>
+            <p>Disk: <span>''' + str(sys_resources[1]) + ''' %</span></p>
+            <p>RAM: <span>''' + str(sys_resources[2]) + ''' %</span></p>
+            <p>Processes: <span>''' + str(sys_resources[6]) + '''</span></p>
+            <p>Load Average 1m: <span>''' + str(sys_resources[3])  + '''</span></p>
+            <p>Load Average 5m: <span>''' + str(sys_resources[4])  + '''</span></p>
+            <p>Load Average 15m: <span>''' + str(sys_resources[5])  + '''</span></p>
         </div>'''
          retVal = retVal + self.html_location_card()
          retVal = retVal +'''</div>

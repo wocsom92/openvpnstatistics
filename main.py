@@ -12,6 +12,13 @@ async def ip_retriever():
         connectionDb.update_missing_connections()
         await asyncio.sleep(Config.ip_update_interval)
 
+async def sys_resource_monitor():
+    while True:
+        connectionDb = ConnectionDB(Config.db_file_mame)
+        connectionDb.create_system_table()
+        connectionDb.update_system_resources()
+        await asyncio.sleep(Config.sys_update_interval)
+
 async def db_clean():
     while True:
         connectionDb = ConnectionDB(Config.db_file_mame)
@@ -47,7 +54,8 @@ async def main():
         asyncio.create_task(file_parse()),
         asyncio.create_task(db_clean()),
         asyncio.create_task(ip_retriever()),
-        asyncio.create_task(output_web_file_generator())
+        asyncio.create_task(output_web_file_generator()),
+        asyncio.create_task(sys_resource_monitor())
     ]
     await asyncio.gather(*tasks)
 
