@@ -4,7 +4,7 @@ from datetime import datetime, date, timedelta
 from connection import Connection
 from config import Config
 from ip_info import IpInfo
-from system_tools import SysteTools
+from system_tools import SystemTools
 
 class ConnectionDB:
     def __init__(self, db_name ):
@@ -359,7 +359,7 @@ class ConnectionDB:
             print("An unexpected error occurred:", e)
             return None, None
 
-    def remove_old_connections(self):
+    def clean_connection_table(self):
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
@@ -378,8 +378,28 @@ class ConnectionDB:
             print("An unexpected error occurred:", e)
         finally:
             conn.close()
+
+    def clean_system_resources_table(self):
+        try:
+            conn = sqlite3.connect(self.db_name)
+            c = conn.cursor()
+
+            delta = datetime.now() - timedelta(days=Config.db_clean_how_many_days_keep_data)
+            threshold_date = delta.strftime("%Y-%m-%d %H:%M:%S")
+
+            c.execute('''
+                DELETE FROM system_resources WHERE table_updated < ?
+            ''', (threshold_date,))
+
+            conn.commit()
+        except sqlite3.Error as e:
+            print("SQLite error occurred:", e)
+        except Exception as e:
+            print("An unexpected error occurred:", e)
+        finally:
+            conn.close()
     
-    def remove_unused_ips_connections(self):
+    def clean_ips_table(self):
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
@@ -584,7 +604,7 @@ FROM (
         try:
             conn = sqlite3.connect(self.db_name)
             c = conn.cursor()
-            st = SysteTools()
+            st = SystemTools()
 
             table_updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             memory = st.get_ram_percentage()

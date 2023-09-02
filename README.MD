@@ -49,15 +49,80 @@ The script will run indefinitely, parsing OpenVPN status data at specified inter
 
 You can customize the behavior of the OpenVPN Connection Monitor by modifying the parameters in the `config.py` file. Here are some of the configurable options:
 
+### Input file
+
 - `input_file_name`: Name of the input file containing OpenVPN status data, usually '/var/log/openvpn/status.log'
 - `input_file_parse_interval`: Interval (in seconds) at which the script should parse OpenVPN status data.
+
+### Output file
+
 - `db_file_name`: Name of the output connection database file.
-- `output_file_name`: Name of the output file for connection statistics.
+- `db_file_location`: Location of database file.
 - `output_file_write_interval`: Interval (in seconds) at which the script should generate and update the output file.
+
+### DB clean functionality
+
 - `db_clean_interval`: Interval (in seconds) at which the script should clean and vacuum db.
 - `db_clean_how_many_days_keep_data`: Interval (in days) at which the script should keep connections data db.
+
+### Ip Retrieving
 - `ip_update_interval`: Interval (in seconds) at which the script should update ip locations data.
+
+### Html output file
+
 - `web_file_path`: Name and location of the output file for example: '/var/www/html/vpn.html'
+- `enable_provider_in_web`: Enables providers to be listed in the web
+- `enable_full_user_name_in_web`: Enables full udser name to be shown, if false, just first letter is shown
+- `ip_information_shown_in_web`: Enables ip informations to be shown in the web
+
+### System monitoring 
+- `sys_update_interval`: Interval (in seconds) at which the script will retrieve system information.
+- `disk_to_monitor`: path to disk which should be monotired (same path as in df command)
+
+## Database structure 
+
+### Table Descriptions
+
+#### Table 1: `connections`
+
+- **Purpose**: Stores information about network connections.
+- **Columns**:
+  - `common_name` (TEXT): The connection's common name.
+  - `real_address` (TEXT): The real address of the connection.
+  - `bytes_received` (INTEGER): Total bytes received.
+  - `bytes_sent` (INTEGER): Total bytes sent.
+  - `connected_since` (DATETIME): Connection start time.
+  - `db_updated` (DATETIME): Last database update time.
+  - `ip_id` (INTEGER): Associated IP address identifier.
+- **Primary Key**: `common_name` and `connected_since`.
+
+#### Table 2: `ips`
+
+- **Purpose**: Stores IP address information.
+- **Columns**:
+  - `id` (INTEGER): Unique identifier (auto-incremented).
+  - `ip` (TEXT): The IP address.
+  - `city` (TEXT): Associated city.
+  - `region` (TEXT): Associated region or state.
+  - `country` (TEXT): Associated country.
+  - `table_updated` (DATETIME): Last database update time.
+  - `provider` (TEXT): IP provider information.
+- **Primary Key**: `id`.
+
+#### Table 3: `system_resources`
+
+- **Purpose**: Records system resource usage.
+- **Columns**:
+  - `table_updated` (DATETIME): Last database update time.
+  - `disk_percentage` (INTEGER): Disk usage percentage.
+  - `memory` (INTEGER): Memory (RAM) usage.
+  - `load_average_1` (REAL): 1-minute load average.
+  - `load_average_5` (REAL): 5-minute load average.
+  - `load_average_15` (REAL): 15-minute load average.
+  - `proc_no` (INTEGER): Number of running processes.
+- **Primary Key**: None specified.
+
+
 
 ## License
 

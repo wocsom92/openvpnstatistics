@@ -1,7 +1,7 @@
 import psutil
 from config import Config
 
-class SysteTools:
+class SystemTools:
     def get_ram_percentage(self):
         virtual_memory = psutil.virtual_memory()
         return virtual_memory.percent
