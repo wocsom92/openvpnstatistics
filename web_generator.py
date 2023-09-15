@@ -230,7 +230,7 @@ class WebGenerator:
             <p>Load Average 5m: <span>''' + str(sys_resources[4])  + '''</span></p>
             <p>Load Average 15m: <span>''' + str(sys_resources[5])  + '''</span></p>
         </div>'''
-         if(Config.location_info):
+         if(Config.location_info == True):
             retVal = retVal + self.html_location_card()
          retVal = retVal +'''</div>
 </body>
@@ -290,7 +290,7 @@ class WebGenerator:
         if( bytes < 1024*1024*1024):
             return  f"{bytes/1024/1024:4.0f}" + " MB"
         if( bytes < 1024*1024*1024*1024):
-            return  f"{bytes/1024/1024/1024:4.2f}" + " GB"
+            return  f"{bytes/1024/1024/1024:4.1f}" + " GB"
         if( bytes < 1024*1024*1024*1024*1024):
             return  f"{bytes/1024/1024/1024/1024:4.2f}" + " TB"
         else:

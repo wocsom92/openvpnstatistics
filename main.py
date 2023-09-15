@@ -1,7 +1,6 @@
 import asyncio
 from openVpnParser import OpenVpnParser
 from connections_db import ConnectionDB
-from user import User
 from config import Config
 from web_generator import WebGenerator
 
