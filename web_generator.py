@@ -230,7 +230,8 @@ class WebGenerator:
             <p>Load Average 5m: <span>''' + str(sys_resources[4])  + '''</span></p>
             <p>Load Average 15m: <span>''' + str(sys_resources[5])  + '''</span></p>
         </div>'''
-         retVal = retVal + self.html_location_card()
+         if(Config.location_info):
+            retVal = retVal + self.html_location_card()
          retVal = retVal +'''</div>
 </body>
 </html>
@@ -304,30 +305,33 @@ class WebGenerator:
             <h2>Location Information</h2>
             <div class="location-data">
         '''
-        for location in locations:
-            if Config.enable_provider_in_web == True:
-                retVal += '''
-                    <div class="location-group">
-                        <ul>
-                            <li><strong>City: </strong>''' + location[2]+ '''</li>
-                            <li><strong>Region: </strong>''' + location[1] + '''</li>
-                            <li><strong>Country: </strong>''' + location[0]+ '''</li>
-                            <li><strong>Provider: </strong> <br>''' + location[3]+ '''</li>
-                        </ul>
-                    </div>
-                '''
-            else:
-                retVal += '''
-                    <div class="location-group">
-                        <ul>
-                            <li><strong>City: </strong>''' + location[2]+ '''</li>
-                            <li><strong>Region: </strong>''' + location[1] + '''</li>
-                            <li><strong>Country: </strong>''' + location[0]+ '''</li>
-                        </ul>
-                    </div>
-                '''
-        retVal += '''          
+        try:
+            for location in locations:
+                if Config.enable_provider_in_web == True:
+                    retVal += '''
+                        <div class="location-group">
+                            <ul>
+                                <li><strong>City: </strong>''' + location[2]+ '''</li>
+                                <li><strong>Region: </strong>''' + location[1] + '''</li>
+                                <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                                <li><strong>Provider: </strong> <br>''' + location[3]+ '''</li>
+                            </ul>
+                        </div>
+                    '''
+                else:
+                    retVal += '''
+                        <div class="location-group">
+                            <ul>
+                                <li><strong>City: </strong>''' + location[2]+ '''</li>
+                                <li><strong>Region: </strong>''' + location[1] + '''</li>
+                                <li><strong>Country: </strong>''' + location[0]+ '''</li>
+                            </ul>
+                        </div>
+                    '''
+            retVal += '''          
+                </div>
             </div>
-        </div>
-        '''
+            '''
+        except Exception as e:
+            print("An unexpected error occurred:", e)
         return retVal

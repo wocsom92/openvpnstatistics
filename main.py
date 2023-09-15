@@ -50,15 +50,16 @@ async def file_parse():
                 connectionDb.insert_connection(connection)      
 
 async def main():
-    Config.production()
-    #Config.test()
-    tasks = [
-        asyncio.create_task(file_parse()),
-        asyncio.create_task(db_clean()),
-        asyncio.create_task(ip_retriever()),
-        asyncio.create_task(output_web_file_generator()),
-        asyncio.create_task(sys_resource_monitor())
-    ]
+    #Config.production()
+    Config.test()
+    tasks = []
+    tasks.append(asyncio.create_task(file_parse()))
+    tasks.append(asyncio.create_task(db_clean()))
+    tasks.append(asyncio.create_task(output_web_file_generator()))
+    if(Config.location_info):
+        tasks.append(asyncio.create_task(ip_retriever()))
+    tasks.append(asyncio.create_task(sys_resource_monitor()))
+
     await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
